@@ -1,0 +1,991 @@
+#+TITLE: config.org
+#+PROPERTY: header-args  :tangle yes
+
+* config.org
+
+** header
+
+#+begin_src emacs-lisp
+  ;;; config --- Summary
+  ;;; Commentary:
+  ;;; Code:
+#+end_src
+
+** Quelpa
+
+#+begin_src emacs-lisp
+  (use-package quelpa :ensure t)
+  (quelpa
+   '(quelpa-use-package
+     :fetcher git
+     :url "https://github.com/quelpa/quelpa-use-package.git"))
+  (require 'quelpa-use-package)
+#+end_src
+
+** Env var
+
+#+begin_src emacs-lisp
+  (let ((envs '("PATH")))
+    (exec-path-from-shell-copy-envs envs))
+#+end_src
+
+** Emoji
+
+#+begin_src emacs-lisp
+  (use-package emojify
+    :ensure t
+    :if (display-graphic-p)
+    :hook (after-init . global-emojify-mode)
+    :bind
+    ("C-x e" . 'emojify-insert-emoji))
+#+end_src
+
+** Minor modeの名前をすっきりさせる
+
+#+begin_src emacs-lisp
+  (use-package blackout :ensure t)
+#+end_src
+
+** スクロール時、行を勝手にウインドウ中央に移動させる挙動をやめる
+
+#+begin_src emacs-lisp
+  (setq-default croll-conservatively 10000)
+#+end_src
+v
+** ファイル選択ウィンドウを使用しない
+
+#+begin_src emacs-lisp
+(setq use-file-dialog nil)
+#+end_src
+
+** Xリソースを使用しない
+
+#+begin_src emacs-lisp
+(setq inhibit-x-resources t)
+#+end_src
+
+** バッファメニューの使用を抑制
+
+#+begin_src emacs-lisp
+(setq inhibit-startup-buffer-menu t)
+#+end_src
+
+
+** package.elを利用しない
+
+#+begin_src emacs-lisp
+(setq package-enable-at-startup nil)
+#+end_src
+
+** 画面の最大化
+
+#+begin_src emacs-lisp
+(push '(fullscreen . maximized) default-frame-alist)
+#+end_src
+
+** スクロールバー/メニューバー/ツールバーを非表示
+v
+#+begin_src emacs-lisp
+(scroll-bar-mode -1)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+#+end_src
+
+** OS判定
+
+#+begin_src emacs-lisp
+(defconst IS-MAC (eq system-type 'darwin))
+(defconst IS-LINUX (memq system-type '(gnu gnu/linux gnu/kfreebsd berkeley-unix)))
+#+end_src
+
+** Emacs標準機能の設定
+vv
+*** yes-or-noをy-or-nに変更
+
+#+begin_src emacs-lisp
+(setq use-short-answers t)
+#+end_src
+
+*** バックアップファイルを作成しない
+
+#+begin_src emacs-lisp
+(setq make-backup-files nil)
+(setq backup-inhibited nil)
+(setq create-lockfiles nil)
+#+end_src
+
+*** ビープ音を無効化
+
+#+begin_src emacs-lisp
+(setq ring-bell-function 'ignore)
+#+end_src
+
+*** デーモン化して emacsclient コマンドを利用可能に
+
+#+begin_src emacs-lisp
+  (use-package server
+    :ensure t
+    :config
+    (unless (server-running-p)
+      (server-start)))
+#+end_src
+
+*** 最後のカーソル位置を保存する
+
+#+begin_src emacs-lisp
+  (use-package saveplace
+    :ensure t
+    :init
+    (save-place-mode +1))
+#+end_src
+
+*** ファイルの閲覧履歴を保存する
+
+#+begin_src emacs-lisp
+  (use-package recentf
+    :ensure t
+    :init
+    (setq recentf-max-saved-items 100)
+    (recentf-mode +1))
+#+end_src
+
+*** コマンドの履歴を保存
+
+#+begin_src emacs-lisp
+  (use-package savehist
+    :ensure t
+    :init
+    (savehist-mode +1))
+#+end_src
+
+*** 対応括弧を強調表示
+
+#+begin_src emacs-lisp
+  (use-package paren
+      :ensure t
+    :init
+    (show-paren-mode +1))
+#+end_src
+
+*** 対応括弧を自動補完
+
+#+begin_src emacs-lisp
+  (use-package elec-pair
+    :ensure t
+    :config
+    (electric-pair-mode +1))
+#+end_src
+
+*** 現在行を強調表示
+
+#+begin_src emacs-lisp
+  (use-package hl-line
+    :ensure t
+    :init
+    (global-hl-line-mode +1))
+#+end_src
+
+*** 他プロセスの編集をバッファに反映
+
+#+begin_src emacs-lisp
+  (use-package autorevert
+    :ensure t
+    :init
+    (global-auto-revert-mode +1))
+#+end_src
+
+*** camelCase単位で移動する
+
+#+begin_src emacs-lisp
+  (use-package subword
+    :ensure t
+    :blackout t
+    :init
+    (global-subword-mode +1))
+#+end_src
+
+
+*** 削除したファイルをゴミ箱に移動させる
+
+#+begin_src emacs-lisp
+  (setq delete-by-moving-to-trash t)
+#+end_src
+
+*** native-compの警告を表示しない
+
+#+begin_src emacs-lisp
+  (setq native-comp-async-report-warnings-errors 'silent)
+#+end_src
+
+*** build時にnative-compファイルを削除する
+
+#+begin_src emacs-lisp
+  (setq native-compile-prune-cache t)
+#+end_src
+
+*** インデントの基本をスペースに変更
+
+#+begin_src emacs-lisp
+  (use-package simple
+    :ensure nil
+    :init
+    (setq-default indent-tabs-mode nil))
+#+end_src
+
+*** ガベージコレクション
+デフォルトの設定ではガベージコレクションが頻発する為調整
+
+#+begin_src emacs-lisp
+(setq gc-cons-percentage 0.2
+      gc-cons-threshold (* 128 1024 1024))
+#+end_src
+
+**** ガベージコレクションのメッセージを表示
+
+#+begin_src emacs-lisp
+(setq garbage-collection-messages t)
+#+end_src
+
+*** 長い行を含むファイルの最適化
+
+#+begin_src emacs-lisp
+  (use-package so-long
+    :ensure t
+    :init
+    (global-so-long-mode +1))
+#+end_src
+
+*** 末尾のスペースを可視化
+
+#+begin_src emacs-lisp
+(setq-default show-trailing-whitespace t)
+#+end_src
+
+*** 選択している状態で入力したときにregionを削除
+
+#+begin_src emacs-lisp
+  (use-package delsel
+    :ensure t
+    :config
+    (delete-selection-mode +1))
+#+end_src
+
+*** パフォーマンス
+
+**** from protesilaos
+
+***** 閉じ括弧を入力しても点滅させない
+
+#+begin_src emacs-lisp
+(setq blink-matching-paren nil)
+#+end_src
+
+***** vcのバックエンドをGitのみに変更
+
+#+begin_src emacs-lisp
+(setq vc-handled-backends '(Git))
+#+end_src
+
+**** from doomemacs
+
+***** ファイル検索を2回行わないようにする
+
+#+begin_src emacs-lisp
+(setq auto-mode-case-fold nil)
+#+end_src
+
+***** 双方向の並び替えを抑制する
+
+#+begin_src emacs-lisp
+(setq-default bidi-display-reordering 'left-to-right)
+#+end_src
+
+***** 長い行の双方向スキャン
+
+#+begin_src emacs-lisp
+(setq bidi-inhibit-bpa t)
+#+end_src
+
+***** フォーカスされていないウィンドウのカーソルを削除
+
+#+begin_src emacs-lisp
+(setq-default cursor-in-non-selected-windows nil)
+(setq highlight-nonselected-windows nil)
+#+end_src
+
+***** 高速なスクロール
+
+#+begin_src emacs-lisp
+(setq fast-but-imprecise-scrolling t)
+#+end_src
+
+***** ドメインにpingを送信しない
+
+#+begin_src emacs-lisp
+(setq ffap-machine-p-known 'reject)
+#+end_src
+
+***** UIの更新頻度を下げる
+
+#+begin_src emacs-lisp
+(setq idle-update-delay 1.0)
+#+end_src
+
+***** 不要なフォント表示化を抑制
+
+#+begin_src emacs-lisp
+(setq redisplay-skip-fontification-on-input t)
+#+end_src
+
+**** from Centaur Emacs
+
+***** 各OSの最適化
+
+#+begin_src emacs-lisp
+(unless IS-MAC
+  (setq command-line-ns-option-alist nil))
+
+(unless IS-LINUX
+  (setq command-line-x-option-alist nil))
+#+end_src
+
+** org
+
+#+begin_src emacs-lisp
+  (use-package org
+    :ensure t
+    :blackout t
+    :init
+    (setq org-return-follows-link t  ; Returnキーでリンク先を開く
+          org-mouse-1-follows-link t ; マウスクリックでリンク先を開く
+          ))
+#+end_src
+
+*** アンダースコアを入力しても下付き文字にならないようにする
+
+#+begin_src emacs-lisp
+(setq org-use-sub-superscripts '{}
+      org-export-with-sub-superscripts nil)
+#+end_src
+
+*** org-agenda
+org-agenda のディレクトリを指定
+
+#+begin_src emacs-lisp
+
+ (use-package org-agenda
+   :ensure nil
+   :after org
+   :config
+   (setq org-agenda-files (file-expand-wildcards (concat org-directory "/*.org"))))
+
+#+end_src
+
+*** org-modern
+org-modeの見た目をリッチに
+
+#+begin_src emacs-lisp
+  (use-package org-modern
+    :ensure t
+    :after org
+    :init
+    (setq
+     ;; Edit settings
+     org-auto-align-tags nil
+     org-tags-column 0
+     org-fold-catch-invisible-edits 'show-and-error
+     org-special-ctrl-a/e t
+     org-insert-heading-respect-content t
+
+     ;; Org styling, hide markup etc.
+     org-hide-emphasis-markers t
+     org-pretty-entities t
+     org-ellipsis "…"
+
+     ;; Agenda styling
+     org-agenda-tags-column 0
+     org-agenda-block-separator ?─
+     org-agenda-time-grid
+     '((daily today require-timed)
+       (800 1000 1200 1400 1600 1800 2000)
+       " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+     org-agenda-current-time-string
+     "⭠ now ─────────────────────────────────────────────────")
+
+    :config
+    (global-org-modern-mode +1))
+#+end_src
+
+** フォント
+
+#+begin_src emacs-lisp
+    (use-package fontaine
+      :ensure t
+      :config
+      (cond (IS-LINUX
+             (setq fontaine-presets
+                   '((regular
+                      :default-family "Hack"
+                      :default-weight normal
+                      :default-height 122
+                      :fixed-pitch-weight nil ; falls back to :default-weight
+                      :fixed-pitch-height 1.0
+                      :variable-pitch-family "Noto Sans"
+                      :variable-pitch-weight normal
+                      :variable-pitch-height 1.0
+                      :bold-family nil ; use whatever the underlying face has
+                      :bold-weight bold
+                      :italic-slant italic
+                      :line-spacing 0)
+                     (large
+                      :default-family "Hack"
+                      :variable-pitch-family "Hack")))))
+
+      (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
+        (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
+#+end_src
+
+** show whitespace
+
+#+begin_src emacs-lisp
+  (setq whitespace-style '(face
+                         trailing
+                         tabs
+                         spaces
+                         empty
+                         space-mark
+                         tab-mark))
+  (setq whitespace-trailing-regexp  "\\([ \u00A0]+\\)$")
+  (global-whitespace-mode 1)
+#+end_src
+
+** icon
+
+#+begin_src emacs-lisp
+  (use-package nerd-icons :ensure t)
+  (use-package nerd-icons-completion
+    :ensure t
+    :hook (after-init . nerd-icons-completion-mode))
+  (use-package nerd-icons-dired
+    :ensure t
+    :hook (dired-mode . nerd-icons-dired-mode))
+#+end_src
+
+** corfu
+補完パッケージ
+
+#+begin_src emacs-lisp
+  (use-package corfu
+    :ensure t
+    :demand t
+    :bind ( :map corfu-map
+            ("TAB" . corfu-insert)
+            ([tab] . corfu-insert)
+            ("RET" . nil)
+            ([return] . nil))
+    :hook (prog-mode . (lambda ()
+                         (global-set-key [remap c-indent-line-or-region] #'indent-for-tab-command)))
+    :config
+    (setq corfu-cycle t
+          corfu-count 16
+          corfu-auto t
+          corfu-auto-prefix 1
+          corfu-auto-delay 0
+          corfu-on-exact-match nil)
+
+    (global-corfu-mode +1)
+
+    (defun corfu-enable-always-in-minibuffer ()
+        "Enable Corfu in the minibuffer if Vertico/Mct are not active."
+        (unless (or (bound-and-true-p mct--active)
+                    (bound-and-true-p vertico--input))
+          ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
+          (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
+                      corfu-popupinfo-delay nil)
+          (corfu-mode 1)))
+      (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1))
+#+end_src
+
+*** corfu-popupinfo
+補完候補の横に説明用のポップアップを表示
+
+#+begin_src emacs-lisp
+  (corfu-popupinfo-mode t)
+#+end_src
+
+*** corfu-magic
+
+補完候補未選択時にRETを押下すると改行、補完候補選択時にRETを押下すると補完候補を選択
+
+#+begin_src emacs-lisp
+  (with-eval-after-load 'corfu
+    (setq corfu-preselect 'prompt)
+
+    (define-key corfu-map (kbd "TAB") 'corfu-next)
+    (define-key corfu-map (kbd "<tab>") 'corfu-next)
+    (define-key corfu-map (kbd "S-TAB") 'corfu-previous)
+    (define-key corfu-map (kbd "<backtab>") 'corfu-previous)
+
+    (defvar corfu--index)
+    (defvar corfu-magic-insert-or-next-line
+      `(menu-item "" nil :filter ,(lambda (&optional _)
+				    (when (>= corfu--index 0)
+				      'corfu-insert)))
+      "If we made a selection during `corfu' completion, select it.")
+    (define-key corfu-map (kbd "RET") corfu-magic-insert-or-next-line)
+
+    (defvar corfu-magic-cancel-or-backspace
+      `(menu-item "" nil :filter ,(lambda (&optional _)
+				    (when (>= corfu--index 0)
+				      'corfu-reset)))
+      "If we made a selection during `corfu' completion, cancel it.")
+    (define-key corfu-map (kbd "DEL") corfu-magic-cancel-or-backspace)
+    (define-key corfu-map (kbd "<backspace") corfu-magic-cancel-or-backspace)
+    )
+#+end_src
+
+** cape
+
+Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマイズ
+
+#+begin_src emacs-lisp
+    (use-package cape
+      :ensure t
+      :hook (((prog-mode
+               text-mode
+               conf-mode
+               eglot-managed-mode
+               lsp-completion-mode) . my/set-super-capf))
+      :config
+      (defun my/set-super-capf (&optional arg)
+        (setq-local completion-at-point-functions
+                    (list (cape-capf-properties
+                           (cape-capf-case-fold
+                            (cape-capf-buster
+                             (cape-capf-super
+                              (if arg
+                                  arg
+                                (car completion-at-point-functions))
+                              :with
+                              #'tempel-complete
+                              #'copilot-complete
+                              #'cape-dabbrev
+                              #'cape-file)))
+                           :sort t
+                           :exclusive 'no)))))
+    (setq dabbrev-friend-buffer-function (lambda (other-buffer)
+                                           (< (buffer-size other-buffer) (* 1024 1024))))
+#+end_src
+
+** TABで補完
+
+#+begin_src emacs-lisp
+    (setq tab-always-indent 'complete)
+#+end_src
+
+** vertico
+
+#+begin_src emacs-lisp
+  (use-package vertico
+    :ensure t
+    :init
+    (setq vertico-cycle t)
+    (vertico-mode +1))
+#+end_src
+
+*** vertico-repeat
+
+直前のコマンドを再度表示
+
+#+begin_src emacs-lisp
+  (use-package vertico-repeat
+    :ensure nil
+    :after vertico
+    :hook (minibuffer-setup . vertico-repeat-save))
+#+end_src
+
+*** vertico-directory
+
+#+begin_src emacs-lisp
+(use-package vertico-directory
+  :ensure nil
+  :after vertico
+  :bind ( :map vertico-map
+          ("<backspace>" . vertico-directory-delete-char)))
+#+end_src
+
+*** vertico-posframe
+
+#+begin_src emacs-lisp
+  (use-package vertico-posframe
+    :ensure t
+    :after vertico
+    :init
+    (setq vertico-posframe-parameters
+          '((left-fringe . 8)
+            (right-fringe . 8))
+          vertico-posframe-height 12
+          vertico-posframe-border-width 3)
+    (vertico-posframe-mode 1))
+#+end_src
+
+** orderless
+
+柔軟な補完スタイルを提供
+
+#+begin_src emacs-lisp
+  (use-package orderless
+    :ensure t
+    :config
+    (setq completion-styles '(orderless basic)
+          completion-category-defaults nil
+          completion-category-overrides nil)
+
+    (with-eval-after-load 'corfu
+      (defun orderless-fast-dispatch (word index total)
+        (and (= index 0) (= total 1) (length< word 4)
+             'orderless-literal-prefix))
+
+      (orderless-define-completion-style orderless-fast
+        (orderless-style-dispatchers '(orderless-fast-dispatch))
+        (orderless-matching-styles '(orderless-flex)))
+
+      (defun my/setup-corfu-for-orderless ()
+        (setq-local corfu-auto-delay 0
+                    corfu-auto-prefix 1
+                    completion-styles '(orderless-fast)))
+
+      (add-hook 'corfu-mode-hook #'my/setup-corfu-for-orderless)))
+#+end_src
+
+** git
+#+begin_src emacs-lisp
+  (use-package magit
+    :ensure t
+    :blackout t
+    :bind (("M-g s" . magit-status)))
+  (use-package diff-hl
+    :ensure t
+    :hook ((magit-pre-refresh . diff-hl-magit-pre-refresh)
+           (magit-post-refresh . diff-hl-magit-post-refresh)
+           (dired-mode . diff-hl-dired-mode))
+    :init
+    (global-diff-hl-mode +1)
+    (global-diff-hl-show-hunk-mouse-mode +1))
+  (use-package difftastic
+    :ensure t
+    :demand t
+    :bind (:map magit-blame-read-only-mode-map
+                ("D" . difftastic-magit-show)
+                ("S" . difftastic-magit-show))
+    :config
+    (eval-after-load 'magit-diff
+      '(transient-append-suffix 'magit-diff '(-1 -1)
+         [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
+          ("S" "Difftastic show" difftastic-magit-show)])))
+#+end_src
+
+** 補完の並び替え
+
+#+begin_src emacs-lisp
+  (use-package prescient
+    :ensure t
+    :config
+    (setq prescient-aggressive-file-save t)
+    (prescient-persist-mode +1))
+  (use-package vertico-prescient
+    :ensure t
+    :config
+    (setq vertico-prescient-enable-filtering nil)
+    (vertico-prescient-mode +1))
+  (use-package corfu-prescient
+    :ensure t
+    :config
+    (setq corfu-prescient-enable-filtering nil)
+    (corfu-prescient-mode +1))
+#+end_src
+
+** consult
+
+#+begin_src emacs-lisp
+  (use-package consult
+    :ensure t
+    :bind
+    (("C-x b" . consult-buffer)
+     ("M-g M-g" . consult-goto-line)    ;; goto-lineをconsult-goto-lineに置き換え
+     ("C-c s" . consult-line)           ;; バッファ内をキーワードで検索
+     ("C-c o" . consult-outline)))      ;; ファイルのアウトラインになりうる項目へ移動
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package marginalia
+    :ensure t
+    :init
+    (marginalia-mode +1))
+#+end_src
+
+** 現在のディレクトリをripgrep
+
+#+begin_src emacs-lisp
+  (defun consult-ripgrep-current-directory ()
+     (interactive)
+     (consult-ripgrep default-directory))
+#+end_src
+
+** vertico の候補等に様々なアクションを提供
+
+#+begin_src emacs-lisp
+  (use-package embark
+    :ensure t
+    :bind (("C-." . embark-act)         ;; pick some comfortable binding
+           ("C-;" . embark-dwim)        ;; good alternative: M-.
+           ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+    :init
+    (setq prefix-help-command #'embark-prefix-help-command)
+
+    :config
+    ;; Hide the mode line of the Embark live/completions buffers
+    (add-to-list 'display-buffer-alist
+                 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                   nil
+                   (window-parameters (mode-line-format . none)))))
+  (use-package embark-consult
+    :ensure t
+    :hook (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
+
+** Paran
+
+#+begin_src emacs-lisp
+  (use-package puni
+    :ensure t
+    :config
+    (puni-global-mode +1))
+#+end_src
+
+** Cursor
+
+#+begin_src emacs-lisp
+  (use-package pulsar
+    :ensure t
+    :config
+    (pulsar-global-mode +1))
+#+end_src
+
+** Regionの変更をハイライト
+
+
+#+begin_src emacs-lisp
+  (use-package goggles
+    :ensure t
+    :blackout t
+    :hook ((prog-mode text-mode) . goggles-mode)
+    :config
+    (setq-default goggles-pulse t))
+#+end_src
+
+** Windowの余白
+
+#+begin_src emacs-lisp
+  (use-package spacious-padding
+    :ensure t
+    :config
+    (setq spacious-padding-widths
+          '( :internal-border-width 15
+             :header-line-width 4
+             :mode-line-width 6
+             :tab-width 4
+             :right-divider-width 30
+             :scroll-bar-width 8))
+
+    ;; Read the doc string of `spacious-padding-subtle-mode-line' as it
+    ;; is very flexible and provides several examples.
+    (setq spacious-padding-subtle-mode-line
+          `( :mode-line-active 'default
+             :mode-line-inactive vertical-border))
+
+    (spacious-padding-mode +1))
+#+end_src
+
+** Windowを中央に寄せる
+
+#+begin_src emacs-lisp
+  (use-package perfect-margin
+    :ensure t
+    :blackout t
+    :config
+    (setq perfect-margin-ignore-filters nil)
+    (perfect-margin-mode +1))
+#+end_src
+
+** インデントを整形
+
+#+begin_src emacs-lisp
+ (use-package aggressive-indent
+   :ensure t
+   :hook (emacs-lisp-mode . aggressive-indent-mode))
+#+end_src
+
+** パンくず
+
+#+begin_src emacs-lisp
+  (use-package breadcrumb
+    :ensure t
+    :config
+    (breadcrumb-mode +1))
+#+end_src
+
+** 括弧の対応に色付け
+
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+
+** Theme
+
+#+begin_src emacs-lisp
+    (use-package ef-themes
+      :ensure t
+      :init
+      (setq ef-themes-mixed-fonts t
+            ef-themes-variable-pitch-ui t))
+#+end_src
+
+
+** editorconfig
+
+#+begin_src emacs-lisp
+  (use-package editorconfig
+    :ensure t
+    :blackout t
+    :config
+    (editorconfig-mode 1))
+#+end_src
+
+** copilot
+
+#+begin_src emacs-lisp
+  (use-package copilot
+    :quelpa (copilot :fetcher github
+                     :repo "copilot-emacs/copilot.el"
+                     :branch "main"
+                     :files ("*.el"))
+    :config
+    (add-hook 'prog-mode-hook 'copilot-mode)
+    (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+    (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion))
+#+end_src
+** Template
+
+#+begin_src emacs-lisp
+  (use-package tempel :ensure t)
+#+end_src
+
+** LSP
+
+#+begin_src emacs-lisp
+    (use-package eglot
+      :ensure t
+      :config
+      (add-hook 'typescript-mode 'eglot-ensure)
+      :bind (("M-t" . xref-find-definitions)
+             ("M-r" . xref-find-references)
+             ("C-t" . xref-go-back)))
+    (use-package eglot-booster
+      :ensure t
+      :quelpa (eglot-booster
+               :fetcher github
+               :repo "jdtsmith/eglot-booster"
+               :branch "main"
+               :files ("*.el"))
+      :after eglot
+      :config (eglot-booster-mode))
+    (use-package consult-eglot
+      :ensure t
+      :after eglot
+      :bind ( :map eglot-mode-map
+              ("C-c s" . consult-eglot-symbols)))
+    (use-package eldoc-box
+      :ensure t
+      :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode))
+    (use-package eglot-signature-eldoc-talkative
+      :ensure t
+      :after eldoc-box
+      :config
+      (advice-add #'eglot-signature-eldoc-function
+        :override #'eglot-signature-eldoc-talkative))
+    (use-package symbol-overlay
+      :ensure t
+      :blackout t
+      :hook (prog-mode . symbol-overlay-mode))
+    (use-package jsonrpc
+      :ensure t
+      :defer t
+      :config
+      (setq jsonrpc-default-request-timeout 3000)
+      (fset #'jsonrpc--log-event #'ignore))
+#+end_src
+
+** Deno
+
+#+begin_src emacs-lisp
+  (require 'eglot)
+  (use-package typescript-mode :ensure t)
+  (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
+
+  (defclass eglot-deno (eglot-lsp-server) ()
+    :documentation "A custom class for deno lsp.")
+
+  (cl-defmethod eglot-initialization-options ((server eglot-deno))
+    "Passes through required deno initialization options"
+    (list :enable t
+          :lint t))
+#+end_src
+
+
+** mermaid
+
+#+begin_src emacs-lisp
+    (use-package mermaid-mode
+      :ensure t
+      :config
+      (setq mermaid-mmdc-location "~/.n/bin/mmdc")
+      (setq mermaid-output-format ".svg"))
+  #+end_src
+
+** org-babelで利用できる言語を追加
+
+#+begin_src emacs-lisp
+  (org-babel-do-load-languages
+    'org-babel-load-languages
+    '((mermaid . t)))
+#+end_src
+
+
+** tree-sitter
+
+#+begin_src emacs-lisp
+  (use-package treesit-auto
+    :ensure t
+    :config
+    (setq treesit-auto-install 'prompt)
+    (treesit-auto-add-to-auto-mode-alist 'all)
+    (global-treesit-auto-mode +1))
+  (add-to-list 'exec-path "~/bin/deno")
+#+end_src
+
+** Load theme
+
+#+begin_src emacs-lisp
+  (load-theme 'ef-bio t)
+#+end_src
+
+** footer
+
+#+begin_src emacs-lisp
+  (provide 'config)
+  ;;; config.org ends here
+#+end_src
