@@ -1,10 +1,6 @@
 #+TITLE: config.org
 #+PROPERTY: header-args  :tangle yes
 
-* config.org
-
-** header
-
 #+begin_src emacs-lisp
   ;;; config --- Summary
   ;;; Commentary:
@@ -23,7 +19,7 @@
       :url "https://github.com/quelpa/quelpa-use-package.git")))
 #+end_src
 
-** Env var
+** 環境変数
 
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
@@ -55,7 +51,7 @@
 #+begin_src emacs-lisp
   (setq-default croll-conservatively 10000)
 #+end_src
-v
+
 ** ファイル選択ウィンドウを使用しない
 
 #+begin_src emacs-lisp
@@ -74,7 +70,6 @@ v
 (setq inhibit-startup-buffer-menu t)
 #+end_src
 
-
 ** package.elを利用しない
 
 #+begin_src emacs-lisp
@@ -88,7 +83,7 @@ v
 #+end_src
 
 ** スクロールバー/メニューバー/ツールバーを非表示
-v
+
 #+begin_src emacs-lisp
 (scroll-bar-mode -1)
 (menu-bar-mode -1)
@@ -102,15 +97,13 @@ v
 (defconst IS-LINUX (memq system-type '(gnu gnu/linux gnu/kfreebsd berkeley-unix)))
 #+end_src
 
-** Emacs標準機能の設定
-vv
-*** yes-or-noをy-or-nに変更
+** yes-or-noをy-or-nに変更
 
 #+begin_src emacs-lisp
 (setq use-short-answers t)
 #+end_src
 
-*** バックアップファイルを作成しない
+** バックアップファイルを作成しない
 
 #+begin_src emacs-lisp
 (setq make-backup-files nil)
@@ -118,13 +111,13 @@ vv
 (setq create-lockfiles nil)
 #+end_src
 
-*** ビープ音を無効化
+** ビープ音を無効化
 
 #+begin_src emacs-lisp
 (setq ring-bell-function 'ignore)
 #+end_src
 
-*** デーモン化して emacsclient コマンドを利用可能に
+** デーモン化して emacsclient コマンドを利用可能に
 
 #+begin_src emacs-lisp
   (use-package server
@@ -134,7 +127,7 @@ vv
       (server-start)))
 #+end_src
 
-*** 最後のカーソル位置を保存する
+** 最後のカーソル位置を保存する
 
 #+begin_src emacs-lisp
   (use-package saveplace
@@ -143,7 +136,7 @@ vv
     (save-place-mode +1))
 #+end_src
 
-*** ファイルの閲覧履歴を保存する
+** ファイルの閲覧履歴を保存する
 
 #+begin_src emacs-lisp
   (use-package recentf
@@ -152,8 +145,7 @@ vv
     (setq recentf-max-saved-items 100)
     (recentf-mode +1))
 #+end_src
-
-*** コマンドの履歴を保存
+** コマンドの履歴を保存
 
 #+begin_src emacs-lisp
   (use-package savehist
@@ -162,7 +154,7 @@ vv
     (savehist-mode +1))
 #+end_src
 
-*** 対応括弧を強調表示
+** 対応括弧を強調表示
 
 #+begin_src emacs-lisp
   (use-package paren
@@ -171,7 +163,7 @@ vv
     (show-paren-mode +1))
 #+end_src
 
-*** 対応括弧を自動補完
+** 対応括弧を自動補完
 
 #+begin_src emacs-lisp
   (use-package elec-pair
@@ -180,7 +172,7 @@ vv
     (electric-pair-mode +1))
 #+end_src
 
-*** 現在行を強調表示
+** 現在行を強調表示
 
 #+begin_src emacs-lisp
   (use-package hl-line
@@ -189,7 +181,7 @@ vv
     (global-hl-line-mode +1))
 #+end_src
 
-*** 他プロセスの編集をバッファに反映
+** 他プロセスの編集をバッファに反映
 
 #+begin_src emacs-lisp
   (use-package autorevert
@@ -198,7 +190,7 @@ vv
     (global-auto-revert-mode +1))
 #+end_src
 
-*** camelCase単位で移動する
+** camelCase単位で移動する
 
 #+begin_src emacs-lisp
   (use-package subword
@@ -208,26 +200,25 @@ vv
     (global-subword-mode +1))
 #+end_src
 
-
-*** 削除したファイルをゴミ箱に移動させる
+** 削除したファイルをゴミ箱に移動させる
 
 #+begin_src emacs-lisp
   (setq delete-by-moving-to-trash t)
 #+end_src
 
-*** native-compの警告を表示しない
+** native-compの警告を表示しない
 
 #+begin_src emacs-lisp
   (setq native-comp-async-report-warnings-errors 'silent)
 #+end_src
 
-*** build時にnative-compファイルを削除する
+** build時にnative-compファイルを削除する
 
 #+begin_src emacs-lisp
   (setq native-compile-prune-cache t)
 #+end_src
 
-*** インデントの基本をスペースに変更
+** インデントの基本をスペースに変更
 
 #+begin_src emacs-lisp
   (use-package simple
@@ -236,7 +227,7 @@ vv
     (setq-default indent-tabs-mode nil))
 #+end_src
 
-*** ガベージコレクション
+** ガベージコレクション
 デフォルトの設定ではガベージコレクションが頻発する為調整
 
 #+begin_src emacs-lisp
@@ -250,7 +241,7 @@ vv
 (setq garbage-collection-messages t)
 #+end_src
 
-*** 長い行を含むファイルの最適化
+** 長い行を含むファイルの最適化
 
 #+begin_src emacs-lisp
   (use-package so-long
@@ -259,13 +250,20 @@ vv
     (global-so-long-mode +1))
 #+end_src
 
-*** 末尾のスペースを可視化
+** 空白文字を可視化
 
 #+begin_src emacs-lisp
-(setq-default show-trailing-whitespace t)
+  (setq whitespace-style '(face
+                         trailing
+                         tabs
+                         spaces
+                         empty
+                         space-mark
+                         tab-mark))
+  (setq whitespace-trailing-regexp  "\\([ \u00A0]+\\)$")
+  (global-whitespace-mode 1)
 #+end_src
-
-*** 選択している状態で入力したときにregionを削除
+** 選択している状態で入力したときにregionを削除
 
 #+begin_src emacs-lisp
   (use-package delsel
@@ -274,76 +272,68 @@ vv
     (delete-selection-mode +1))
 #+end_src
 
-*** パフォーマンス
-
-**** from protesilaos
-
-***** 閉じ括弧を入力しても点滅させない
+** パフォーマンス
+**** 閉じ括弧を入力しても点滅させない
 
 #+begin_src emacs-lisp
 (setq blink-matching-paren nil)
 #+end_src
 
-***** vcのバックエンドをGitのみに変更
+**** vcのバックエンドをGitのみに変更
 
 #+begin_src emacs-lisp
 (setq vc-handled-backends '(Git))
 #+end_src
-
-**** from doomemacs
-
-***** ファイル検索を2回行わないようにする
+**** ファイル検索を2回行わないようにする
 
 #+begin_src emacs-lisp
 (setq auto-mode-case-fold nil)
 #+end_src
 
-***** 双方向の並び替えを抑制する
+**** 双方向の並び替えを抑制する
 
 #+begin_src emacs-lisp
 (setq-default bidi-display-reordering 'left-to-right)
 #+end_src
 
-***** 長い行の双方向スキャン
+**** 長い行の双方向スキャン
 
 #+begin_src emacs-lisp
 (setq bidi-inhibit-bpa t)
 #+end_src
 
-***** フォーカスされていないウィンドウのカーソルを削除
+**** フォーカスされていないウィンドウのカーソルを削除
 
 #+begin_src emacs-lisp
 (setq-default cursor-in-non-selected-windows nil)
 (setq highlight-nonselected-windows nil)
 #+end_src
 
-***** 高速なスクロール
+**** 高速なスクロール
 
 #+begin_src emacs-lisp
 (setq fast-but-imprecise-scrolling t)
 #+end_src
 
-***** ドメインにpingを送信しない
+**** ドメインにpingを送信しない
 
 #+begin_src emacs-lisp
 (setq ffap-machine-p-known 'reject)
 #+end_src
 
-***** UIの更新頻度を下げる
+**** UIの更新頻度を下げる
 
 #+begin_src emacs-lisp
 (setq idle-update-delay 1.0)
 #+end_src
 
-***** 不要なフォント表示化を抑制
+**** 不要なフォント表示化を抑制
 
 #+begin_src emacs-lisp
 (setq redisplay-skip-fontification-on-input t)
 #+end_src
 
-**** from Centaur Emacs
-
-***** 各OSの最適化
+**** 各OSの最適化
 
 #+begin_src emacs-lisp
 (unless IS-MAC
@@ -449,21 +439,7 @@ org-modeの見た目をリッチに
         (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
 #+end_src
 
-** show whitespace
-
-#+begin_src emacs-lisp
-  (setq whitespace-style '(face
-                         trailing
-                         tabs
-                         spaces
-                         empty
-                         space-mark
-                         tab-mark))
-  (setq whitespace-trailing-regexp  "\\([ \u00A0]+\\)$")
-  (global-whitespace-mode 1)
-#+end_src
-
-** icon
+** アイコン
 
 #+begin_src emacs-lisp
   (use-package nerd-icons :ensure t)
@@ -736,7 +712,7 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
      (consult-ripgrep default-directory))
 #+end_src
 
-** vertico の候補等に様々なアクションを提供
+** C-. で空気を読む
 
 #+begin_src emacs-lisp
   (use-package embark
@@ -758,7 +734,7 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     :hook (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 
-** Paran
+** 構造的編集
 
 #+begin_src emacs-lisp
   (use-package puni
@@ -777,7 +753,6 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
 #+end_src
 
 ** Regionの変更をハイライト
-
 
 #+begin_src emacs-lisp
   (use-package goggles
@@ -847,17 +822,16 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
-
-** Theme
+** theme
 
 #+begin_src emacs-lisp
-    (use-package ef-themes
-      :ensure t
-      :init
-      (setq ef-themes-mixed-fonts t
-            ef-themes-variable-pitch-ui t))
+  (use-package ef-themes
+    :ensure t
+    :init
+    (setq ef-themes-mixed-fonts t
+          ef-themes-variable-pitch-ui t)
+    (load-theme 'ef-bio t))
 #+end_src
-
 
 ** editorconfig
 
@@ -882,7 +856,7 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
     (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion))
 #+end_src
-** Template
+** template
 
 #+begin_src emacs-lisp
   (use-package tempel :ensure t)
@@ -949,7 +923,6 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
           :lint t))
 #+end_src
 
-
 ** mermaid
 
 #+begin_src emacs-lisp
@@ -970,12 +943,6 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     (treesit-auto-add-to-auto-mode-alist 'all)
     (global-treesit-auto-mode +1))
   (add-to-list 'exec-path "~/bin/deno")
-#+end_src
-
-** Load theme
-
-#+begin_src emacs-lisp
-  (load-theme 'ef-bio t)
 #+end_src
 
 ** footer
