@@ -5,14 +5,15 @@ fontaine-latest-state.eld
 places
 recentf
 
-auto-save-list/*
-emojis/*
-.cache/*
-elpa/*
-quelpa/*
-tree-sitter/*
-transient/*
-var/*
+auto-save-list/
+eln-cache/
+emojis/
+.cache/
+elpa/
+quelpa/
+tree-sitter/
+transient/
+var/
 
 
 config.el*

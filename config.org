@@ -14,19 +14,23 @@
 ** Quelpa
 
 #+begin_src emacs-lisp
-  (use-package quelpa :ensure t)
+  (use-package quelpa
+  :ensure t
+  :config
   (quelpa
-   '(quelpa-use-package
-     :fetcher git
-     :url "https://github.com/quelpa/quelpa-use-package.git"))
-  (require 'quelpa-use-package)
+    '(quelpa-use-package
+      :fetcher git
+      :url "https://github.com/quelpa/quelpa-use-package.git")))
 #+end_src
 
 ** Env var
 
 #+begin_src emacs-lisp
-  (let ((envs '("PATH")))
-    (exec-path-from-shell-copy-envs envs))
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (let ((envs '("PATH")))
+      (exec-path-from-shell-copy-envs envs)))
 #+end_src
 
 ** Emoji
@@ -955,15 +959,6 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
       (setq mermaid-mmdc-location "~/.n/bin/mmdc")
       (setq mermaid-output-format ".svg"))
   #+end_src
-
-** org-babelで利用できる言語を追加
-
-#+begin_src emacs-lisp
-  (org-babel-do-load-languages
-    'org-babel-load-languages
-    '((mermaid . t)))
-#+end_src
-
 
 ** tree-sitter
 
