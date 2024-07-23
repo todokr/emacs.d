@@ -1,6 +1,8 @@
 #+TITLE: config.org
 #+PROPERTY: header-args  :tangle yes
 
+heavyly infruenced by https://qiita.com/nobuyuki86/items/122e85b470b361ded0b4
+
 #+begin_src emacs-lisp
   ;;; config --- Summary
   ;;; Commentary:
