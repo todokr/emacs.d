@@ -415,30 +415,28 @@ org-modeの見た目をリッチに
 ** フォント
 
 #+begin_src emacs-lisp
-    (use-package fontaine
-      :ensure t
-      :config
-      (cond (IS-LINUX
-             (setq fontaine-presets
-                   '((regular
-                      :default-family "Hack"
-                      :default-weight normal
-                      :default-height 122
-                      :fixed-pitch-weight nil ; falls back to :default-weight
-                      :fixed-pitch-height 1.0
-                      :variable-pitch-family "Noto Sans"
-                      :variable-pitch-weight normal
-                      :variable-pitch-height 1.0
-                      :bold-family nil ; use whatever the underlying face has
-                      :bold-weight bold
-                      :italic-slant italic
-                      :line-spacing 0)
-                     (large
-                      :default-family "Hack"
-                      :variable-pitch-family "Hack")))))
+  (use-package fontaine
+    :ensure t
+    :config
+    (cond (IS-LINUX
+           (setq fontaine-presets
+                 '((regular
+                    :default-family "Hack"
+                    :default-weight normal
+                    :default-height 100
+                    :fixed-pitch-weight nil ; falls back to :default-weight
+                    :variable-pitch-family "Noto Sans"
+                    :variable-pitch-weight normal
+                    :bold-family nil ; use whatever the underlying face has
+                    :bold-weight bold
+                    :italic-slant italic
+                    :line-spacing 0)
+                   (large
+                    :default-family "Hack"
+                    :variable-pitch-family "Hack")))))
 
-      (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
-        (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
+    (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
+      (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
 #+end_src
 
 ** アイコン
@@ -532,27 +530,27 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
 
 #+begin_src emacs-lisp
     (use-package cape
-      :ensure t
-      :hook (((prog-mode
-               text-mode
-               conf-mode
-               eglot-managed-mode
-               lsp-completion-mode) . my/set-super-capf))
-      :config
-      (defun my/set-super-capf (&optional arg)
-        (setq-local completion-at-point-functions
-                    (list (cape-capf-properties
-                          (cape-capf-case-fold
-                            (cape-capf-buster
-                             (cape-capf-super
-                              (if arg
-                                  arg
-                                (car completion-at-point-functions))
-                              :with
-                              #'tempel-complete
-                              #'copilot-complete
-                              #'cape-dabbrev
-                              #'cape-file)))
+     :ensure t
+     :hook (((prog-mode
+              text-mode
+              conf-mode
+              eglot-managed-mode
+              lsp-completion-mode) . my/set-super-capf))
+     :config
+     (defun my/set-super-capf (&optional arg)
+       (setq-local completion-at-point-functions
+                   (list (cape-capf-properties
+                         (cape-capf-case-fold
+                           (cape-capf-buster
+                            (cape-capf-super
+                             (if arg
+                                 arg
+                               (car completion-at-point-functions))
+                             :with
+                             #'tempel-complete
+                             #'copilot-complete
+                             #'cape-dabbrev
+                             #'cape-file)))
                            :sort t
                            :exclusive 'no)))))
     (setq dabbrev-friend-buffer-function (lambda (other-buffer)
@@ -778,8 +776,8 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
              :header-line-width 4
              :mode-line-width 0
              :tab-width 4
-             :right-divider-width 30
-             :scroll-bar-width 8))
+             :right-divider-width 16
+             :scroll-bar-width 4))
 
     ;; Read the doc string of `spacious-padding-subtle-mode-line' as it
     ;; is very flexible and provides several examples.
@@ -856,10 +854,12 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
                      :branch "main"
                      :files ("*.el"))
     :config
+    (setq copilot-indent-offset-warning-disable t)
     (add-hook 'prog-mode-hook 'copilot-mode)
     (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
     (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion))
 #+end_src
+
 ** template
 
 #+begin_src emacs-lisp
@@ -869,46 +869,99 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
 ** LSP
 
 #+begin_src emacs-lisp
-    (use-package eglot
-      :ensure t
-      :config
-      (add-hook 'typescript-mode 'eglot-ensure)
-      :bind (("M-t" . xref-find-definitions)
-             ("M-r" . xref-find-references)
-             ("C-t" . xref-go-back)))
-    (use-package eglot-booster
-      :ensure t
-      :quelpa (eglot-booster
-               :fetcher github
-               :repo "jdtsmith/eglot-booster"
-               :branch "main"
-               :files ("*.el"))
-      :after eglot
-      :config (eglot-booster-mode))
-    (use-package consult-eglot
-      :ensure t
-      :after eglot
-      :bind ( :map eglot-mode-map
-              ("C-c s" . consult-eglot-symbols)))
-    (use-package eldoc-box
-      :ensure t
-      :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode))
-    (use-package eglot-signature-eldoc-talkative
-      :ensure t
-      :after eldoc-box
-      :config
-      (advice-add #'eglot-signature-eldoc-function
-        :override #'eglot-signature-eldoc-talkative))
-    (use-package symbol-overlay
-      :ensure t
-      :blackout t
-      :hook (prog-mode . symbol-overlay-mode))
-    (use-package jsonrpc
-      :ensure t
-      :defer t
-      :config
-      (setq jsonrpc-default-request-timeout 3000)
-      (fset #'jsonrpc--log-event #'ignore))
+  (use-package eglot
+    :ensure t
+    :config
+    (add-hook 'typescript-mode 'eglot-ensure)
+    :bind (("M-t" . xref-find-definitions)
+           ("M-r" . xref-find-references)
+           ("C-t" . xref-go-back)
+           ("C-c ." . eglot-code-actions)))
+  (use-package eglot-booster
+    :ensure t
+    :quelpa (eglot-booster
+             :fetcher github
+             :repo "jdtsmith/eglot-booster"
+             :branch "main"
+             :files ("*.el"))
+    :after eglot
+    :config (eglot-booster-mode))
+  (use-package consult-eglot
+    :ensure t
+    :after eglot
+    :bind ( :map eglot-mode-map
+            ("C-c s" . consult-eglot-symbols)))
+  (use-package eldoc-box
+    :ensure t
+    :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode))
+  (use-package eglot-signature-eldoc-talkative
+    :ensure t
+    :after eldoc-box
+    :config
+    (advice-add #'eglot-signature-eldoc-function
+      :override #'eglot-signature-eldoc-talkative))
+  (use-package symbol-overlay
+    :ensure t
+    :blackout t
+    :hook (prog-mode . symbol-overlay-mode))
+  (use-package jsonrpc
+    :ensure t
+    :defer t
+    :config
+    (setq jsonrpc-default-request-timeout 3000)
+    (fset #'jsonrpc--log-event #'ignore))
+#+end_src
+
+** typescript
+
+#+begin_src emacs-lisp
+  (use-package typescript-mode
+    :ensure t)
+  (use-package jtsx
+    :ensure t
+    :mode (("\\.jsx?\\'" . jtsx-jsx-mode)
+           ("\\.tsx\\'" . jtsx-tsx-mode)
+           ("\\.ts\\'" . jtsx-typescript-mode))
+    :commands jtsx-install-treesit-language
+    :hook ((jtsx-jsx-mode . hs-minor-mode)
+           (jtsx-tsx-mode . hs-minor-mode)
+           (jtsx-typescript-mode . hs-minor-mode))
+    :custom
+    ;; Optional customizations
+    ;; (js-indent-level 2)
+    ;; (typescript-ts-mode-indent-offset 2)
+    ;; (jtsx-switch-indent-offset 0)
+    (jtsx-indent-statement-block-regarding-standalone-parent nil)
+    (jtsx-jsx-element-move-allow-step-out t)
+    (jtsx-enable-jsx-electric-closing-element t)
+    (jtsx-enable-electric-open-newline-between-jsx-element-tags t)
+    (jtsx-enable-jsx-element-tags-auto-sync t)
+    (jtsx-enable-all-syntax-highlighting-features t)
+    :config
+    (defun jtsx-bind-keys-to-mode-map (mode-map)
+      "Bind keys to MODE-MAP."
+      (define-key mode-map (kbd "C-c C-j") 'jtsx-jump-jsx-element-tag-dwim)
+      (define-key mode-map (kbd "C-c j o") 'jtsx-jump-jsx-opening-tag)
+      (define-key mode-map (kbd "C-c j c") 'jtsx-jump-jsx-closing-tag)
+      (define-key mode-map (kbd "C-c j r") 'jtsx-rename-jsx-element)
+      (define-key mode-map (kbd "C-c <down>") 'jtsx-move-jsx-element-tag-forward)
+      (define-key mode-map (kbd "C-c <up>") 'jtsx-move-jsx-element-tag-backward)
+      (define-key mode-map (kbd "C-c C-<down>") 'jtsx-move-jsx-element-forward)
+      (define-key mode-map (kbd "C-c C-<up>") 'jtsx-move-jsx-element-backward)
+      (define-key mode-map (kbd "C-c C-S-<down>") 'jtsx-move-jsx-element-step-in-forward)
+      (define-key mode-map (kbd "C-c C-S-<up>") 'jtsx-move-jsx-element-step-in-backward)
+      (define-key mode-map (kbd "C-c j w") 'jtsx-wrap-in-jsx-element)
+      (define-key mode-map (kbd "C-c j u") 'jtsx-unwrap-jsx)
+      (define-key mode-map (kbd "C-c j d") 'jtsx-delete-jsx-node))
+
+    (defun jtsx-bind-keys-to-jtsx-jsx-mode-map ()
+      (jtsx-bind-keys-to-mode-map jtsx-jsx-mode-map))
+
+    (defun jtsx-bind-keys-to-jtsx-tsx-mode-map ()
+      (jtsx-bind-keys-to-mode-map jtsx-tsx-mode-map))
+
+    (add-hook 'jtsx-jsx-mode-hook 'jtsx-bind-keys-to-jtsx-jsx-mode-map)
+    (add-hook 'jtsx-tsx-mode-hook 'jtsx-bind-keys-to-jtsx-tsx-mode-map))
 #+end_src
 
 ** Deno
