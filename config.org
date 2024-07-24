@@ -542,7 +542,7 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
       (defun my/set-super-capf (&optional arg)
         (setq-local completion-at-point-functions
                     (list (cape-capf-properties
-                           (cape-capf-case-fold
+                          (cape-capf-case-fold
                             (cape-capf-buster
                              (cape-capf-super
                               (if arg
@@ -774,9 +774,9 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     :ensure t
     :config
     (setq spacious-padding-widths
-          '( :internal-border-width 15
+          '( :internal-border-width 4
              :header-line-width 4
-             :mode-line-width 6
+             :mode-line-width 0
              :tab-width 4
              :right-divider-width 30
              :scroll-bar-width 8))
@@ -784,8 +784,8 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     ;; Read the doc string of `spacious-padding-subtle-mode-line' as it
     ;; is very flexible and provides several examples.
     (setq spacious-padding-subtle-mode-line
-          `( :mode-line-active 'default
-             :mode-line-inactive vertical-border))
+          `( :mode-line-active "SeaGreen4"
+             :mode-line-inactive "gray40"))
 
     (spacious-padding-mode +1))
 #+end_src
