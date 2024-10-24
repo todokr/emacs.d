@@ -177,10 +177,10 @@ heavyly infruenced by https://qiita.com/nobuyuki86/items/122e85b470b361ded0b4
 ** 現在行を強調表示
 
 #+begin_src emacs-lisp
-  (use-package hl-line
-    :ensure t
-    :init
-    (global-hl-line-mode +1))
+  ;; (use-package hl-line
+  ;;   :ensure t
+  ;;   :init
+  ;;   (global-hl-line-mode +1))
 #+end_src
 
 ** 他プロセスの編集をバッファに反映
@@ -421,16 +421,16 @@ org-modeの見た目をリッチに
     (cond (IS-LINUX
            (setq fontaine-presets
                  '((regular
-                    :default-family "Hack"
-                    :default-weight normal
-                    :default-height 100
-                    :fixed-pitch-weight nil ; falls back to :default-weight
-                    :variable-pitch-family "Noto Sans"
-                    :variable-pitch-weight normal
-                    :bold-family nil ; use whatever the underlying face has
-                    :bold-weight bold
-                    :italic-slant italic
-                    :line-spacing 0)
+                   :default-family "Hack"
+                   :default-weight normal
+                   :default-height 95
+                   :fixed-pitch-weight nil ; falls back to :default-weight
+                   :variable-pitch-family "Noto Sans"
+                   :variable-pitch-weight normal
+                   :bold-family nil ; use whatever the underlying face has
+                   :bold-weight bold
+                   :italic-slant italic
+                   :line-spacing 0)
                    (large
                     :default-family "Hack"
                     :variable-pitch-family "Hack")))))
@@ -873,6 +873,7 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     :ensure t
     :config
     (add-hook 'typescript-mode 'eglot-ensure)
+    (add-hook 'go-mode 'eglot-ensure)
     :bind (("M-t" . xref-find-definitions)
            ("M-r" . xref-find-references)
            ("C-t" . xref-go-back)
@@ -915,8 +916,7 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
 ** typescript
 
 #+begin_src emacs-lisp
-  (use-package typescript-mode
-    :ensure t)
+;  (use-package typescript-mode :ensure t)
   (use-package jtsx
     :ensure t
     :mode (("\\.jsx?\\'" . jtsx-jsx-mode)
@@ -928,8 +928,9 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
            (jtsx-typescript-mode . hs-minor-mode))
     :custom
     ;; Optional customizations
-    ;; (js-indent-level 2)
-    ;; (typescript-ts-mode-indent-offset 2)
+    (js-indent-level 2)
+    (typescript-indent-level 2)
+    (typescript-ts-mode-indent-offset 2)
     ;; (jtsx-switch-indent-offset 0)
     (jtsx-indent-statement-block-regarding-standalone-parent nil)
     (jtsx-jsx-element-move-allow-step-out t)
@@ -980,6 +981,11 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
           :lint t))
 #+end_src
 
+#+begin_src emacs-lisp
+  (use-package go-mode
+    :ensure t)
+#+end_src
+
 ** mermaid
 
 #+begin_src emacs-lisp
@@ -993,13 +999,13 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
 ** tree-sitter
 
 #+begin_src emacs-lisp
-  (use-package treesit-auto
-    :ensure t
-    :config
-    (setq treesit-auto-install 'prompt)
-    (treesit-auto-add-to-auto-mode-alist 'all)
-    (global-treesit-auto-mode +1))
-  (add-to-list 'exec-path "~/bin/deno")
+  ;; (use-package treesit-auto
+  ;;   :ensure t
+  ;;   :config
+  ;;   (setq treesit-auto-install 'prompt)
+  ;;   (treesit-auto-add-to-auto-mode-alist 'all)
+  ;;   (global-treesit-auto-mode +1))
+  ;; (add-to-list 'exec-path "~/bin/deno")
 #+end_src
 
 ** footer
