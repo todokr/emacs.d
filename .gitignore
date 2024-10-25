@@ -20,3 +20,5 @@ config.el*
 init.elc
 *.el~
 
+/projects
+/session.*
