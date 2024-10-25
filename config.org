@@ -415,26 +415,27 @@ org-modeの見た目をリッチに
 ** フォント
 
 #+begin_src emacs-lisp
-  (use-package fontaine
-    :ensure t
-    :config
-    (cond (IS-LINUX
-           (setq fontaine-presets
-                 '((regular
-                   :default-family "Hack"
-                   :default-weight normal
-                   :default-height 95
-                   :fixed-pitch-weight nil ; falls back to :default-weight
-                   :variable-pitch-family "Noto Sans"
-                   :variable-pitch-weight normal
-                   :bold-family nil ; use whatever the underlying face has
-                   :bold-weight bold
-                   :italic-slant italic
-                   :line-spacing 0)
-                   (large
-                    :default-family "Hack"
-                    :variable-pitch-family "Hack")))))
-
+    (use-package fontaine
+      :ensure t
+      :config
+      (cond (IS-LINUX
+             (setq fontaine-presets
+                   '((regular
+                      :default-family "Hack"
+                      :default-weight normal
+                      :default-height 120
+                      :fixed-pitch-weight nil ; falls back to :default-weight
+                      :fixed-pitch-height 1.0
+                      :variable-pitch-family "Noto Sans"
+                      :variable-pitch-weight normal
+                      :variable-pitch-height 1.0
+                      :bold-family nil ; use whatever the underlying face has
+                      :bold-weight bold
+                      :italic-slant italic
+                      :line-spacing 0)
+                     (large
+                      :default-family "Hack"
+                      :variable-pitch-family "Hack")))))
     (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
       (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
 #+end_src
@@ -687,6 +688,94 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     (corfu-prescient-mode +1))
 #+end_src
 
+** projectile
+#+begin_src emacs-lisp
+  (use-package projectile
+    :ensure t
+    :config
+    (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (projectile-mode +1))
+#+end_src
+
+** treemacs
+
+#+begin_src emacs-lisp
+    (use-package treemacs
+    :ensure t
+    :defer t
+    :init
+    (with-eval-after-load 'winum
+      (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+    :config
+    (progn
+      (setq treemacs-collapse-dirs                 (if (treemacs--find-python3) 3 0)
+            treemacs-deferred-git-apply-delay      0.5
+            treemacs-display-in-side-window        t
+            treemacs-eldoc-display                 t
+            treemacs-file-event-delay              5000
+            treemacs-file-follow-delay             0.2
+            treemacs-follow-after-init             t
+            treemacs-git-command-pipe              ""
+            treemacs-goto-tag-strategy             'refetch-index
+            treemacs-indentation                   2
+            treemacs-indentation-string            " "
+            treemacs-is-never-other-window         nil
+            treemacs-max-git-entries               5000
+            treemacs-missing-project-action        'ask
+            treemacs-no-png-images                 nil
+            treemacs-no-delete-other-windows       t
+            treemacs-project-follow-cleanup        nil
+            treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+            treemacs-recenter-distance             0.1
+            treemacs-recenter-after-file-follow    nil
+            treemacs-recenter-after-tag-follow     nil
+            treemacs-recenter-after-project-jump   'always
+            treemacs-recenter-after-project-expand 'on-distance
+            treemacs-show-cursor                   nil
+            treemacs-show-hidden-files             t
+            treemacs-silent-filewatch              nil
+            treemacs-silent-refresh                nil
+            treemacs-sorting                       'alphabetic-desc
+            treemacs-space-between-root-nodes      t
+            treemacs-tag-follow-cleanup            t
+            treemacs-tag-follow-delay              1.5
+            treemacs-width                         35)
+
+      ;; The default width and height of the icons is 22 pixels. If you are
+      ;; using a Hi-DPI display, uncomment this to double the icon size.
+      ;; (treemacs-resize-icons 44)
+
+      (treemacs-follow-mode t)
+      (treemacs-filewatch-mode t)
+      (treemacs-fringe-indicator-mode t)
+      (pcase (cons (not (null (executable-find "git")))
+                   (not (null (treemacs--find-python3))))
+        (`(t . t)
+         (treemacs-git-mode 'deferred))
+        (`(t . _)
+         (treemacs-git-mode 'simple))))
+    :bind
+    (:map global-map
+          ("M-0"       . treemacs-select-window)
+          ("C-x t 1"   . treemacs-delete-other-windows)
+          ("C-x t t"   . treemacs)
+          ("C-x t B"   . treemacs-bookmark)
+          ("C-x t C-t" . treemacs-find-file)
+          ("C-x t M-t" . treemacs-find-tag)))
+
+  (use-package treemacs-projectile
+    :after treemacs projectile
+    :ensure t)
+
+  (use-package treemacs-all-the-icons
+    :after treemacs
+    :ensure t)
+
+  (use-package treemacs-magit
+    :after treemacs magit
+    :ensure t)
+#+end_src
 ** consult
 
 #+begin_src emacs-lisp
@@ -845,6 +934,36 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     (editorconfig-mode 1))
 #+end_src
 
+** Markdown
+#+begin_src emacs-lisp
+
+  (use-package markdown-mode
+         :commands (markdown-mode gfm-mode)
+         :mode (("\\.md\\'" . gfm-mode)
+            ("\\.markdown\\'" . gfm-mode))
+         :config
+         (setq
+          markdown-command "github-markup"
+          markdown-command-needs-filename t
+          markdown-content-type "application/xhtml+xml"
+          markdown-css-paths '("https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css")
+          markdown-xhtml-header-content "
+<style>
+body {
+  box-sizing: border-box;
+  max-width: 740px;
+  width: 100%;
+  margin: 40px auto;
+  padding: 0 10px;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.classList.add('markdown-body');
+});
+</script>
+" ))
+#+end_src
 ** copilot
 
 #+begin_src emacs-lisp
@@ -858,6 +977,7 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     (add-hook 'prog-mode-hook 'copilot-mode)
     (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
     (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion))
+
 #+end_src
 
 ** template
@@ -876,8 +996,8 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     (add-hook 'go-mode 'eglot-ensure)
     :bind (("M-t" . xref-find-definitions)
            ("M-r" . xref-find-references)
-           ("C-t" . xref-go-back)
-           ("C-c ." . eglot-code-actions)))
+           ("C-c ." . eglot-code-actions)
+           ("C-t" . xref-go-back)))
   (use-package eglot-booster
     :ensure t
     :quelpa (eglot-booster
@@ -987,6 +1107,7 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
   (use-package go-mode
     :ensure t)
 #+end_src
+
 
 ** Scala
 
