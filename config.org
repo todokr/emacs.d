@@ -368,13 +368,11 @@ heavyly infruenced by https://qiita.com/nobuyuki86/items/122e85b470b361ded0b4
 org-agenda のディレクトリを指定
 
 #+begin_src emacs-lisp
-
  (use-package org-agenda
    :ensure nil
    :after org
    :config
    (setq org-agenda-files (file-expand-wildcards (concat org-directory "/*.org"))))
-
 #+end_src
 
 *** org-modern
@@ -384,6 +382,8 @@ org-modeの見た目をリッチに
   (use-package org-modern
     :ensure t
     :after org
+    :custom
+    (org-modern-fold-stars '(("▶" . "▼") ("▹" . "▿") ("▸" . "▾")))
     :init
     (setq
      ;; Edit settings
@@ -413,31 +413,66 @@ org-modeの見た目をリッチに
 #+end_src
 
 ** フォント
-
+これが日本語
 #+begin_src emacs-lisp
-    (use-package fontaine
-      :ensure t
-      :config
-      (cond (IS-LINUX
-             (setq fontaine-presets
-                   '((regular
-                      :default-family "Hack"
-                      :default-weight normal
-                      :default-height 120
-                      :fixed-pitch-weight nil ; falls back to :default-weight
-                      :fixed-pitch-height 1.0
-                      :variable-pitch-family "Noto Sans"
-                      :variable-pitch-weight normal
-                      :variable-pitch-height 1.0
-                      :bold-family nil ; use whatever the underlying face has
-                      :bold-weight bold
-                      :italic-slant italic
-                      :line-spacing 0)
-                     (large
-                      :default-family "Hack"
-                      :variable-pitch-family "Hack")))))
-    (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
-      (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
+            (use-package fontaine
+              :ensure t
+              :config
+              (setq fontaine-latest-state-file (locate-user-emacs-file "fontaine-latest-state.eld"))
+              (setq fontaine-presets
+                '((small
+                   :default-height 80)
+                  (regular) ; like this it uses all the fallback values and is named `regular'
+                  (medium
+                   :default-weight semilight
+                   :default-height 115
+                   :bold-weight extrabold)
+                  (large
+                   :inherit medium
+                   :default-height 150)
+                  (presentation
+                   :default-height 180)
+                  (t
+                   ;; I keep all properties for didactic purposes, but most can be
+                   ;; omitted.  See the fontaine manual for the technicalities:
+                   ;; <https://protesilaos.com/emacs/fontaine>.
+                   :default-family "HackGen35"
+                   :default-weight regular
+                   :default-height 135
+
+                   :fixed-pitch-family nil ; falls back to :default-family
+                   :fixed-pitch-weight nil ; falls back to :default-weight
+                   :fixed-pitch-height 1.0
+                   :fixed-pitch-serif-family nil ; falls back to :default-family
+                   :fixed-pitch-serif-weight nil ; falls back to :default-weight
+                   :fixed-pitch-serif-height 1.0
+                   :variable-pitch-weight nil
+                   :variable-pitch-height 1.0
+                   :mode-line-active-family nil ; falls back to :default-family
+                   :mode-line-active-weight nil ; falls back to :default-weight
+                   :mode-line-active-height 0.9
+                   :mode-line-inactive-family nil ; falls back to :default-family
+                   :mode-line-inactive-weight nil ; falls back to :default-weight
+                   :mode-line-inactive-height 0.9
+                   :header-line-family nil ; falls back to :default-family
+                   :header-line-weight nil ; falls back to :default-weight
+                   :header-line-height 0.9
+                   :line-number-family nil ; falls back to :default-family
+                   :line-number-weight nil ; falls back to :default-weight
+                   :line-number-height 0.9
+                   :tab-bar-family nil ; falls back to :default-family
+                   :tab-bar-weight nil ; falls back to :default-weight
+                   :tab-bar-height 1.0
+                   :tab-line-family nil ; falls back to :default-family
+                   :tab-line-weight nil ; falls back to :default-weight
+                   :tab-line-height 1.0
+                   :bold-family nil ; use whatever the underlying face has
+                   :bold-weight bold
+                   :italic-family nil
+                   :italic-slant italic
+                   :line-spacing nil)))
+            (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
+              (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
 #+end_src
 
 ** アイコン
@@ -938,31 +973,33 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
 #+begin_src emacs-lisp
 
   (use-package markdown-mode
-         :commands (markdown-mode gfm-mode)
-         :mode (("\\.md\\'" . gfm-mode)
-            ("\\.markdown\\'" . gfm-mode))
-         :config
-         (setq
-          markdown-command "github-markup"
-          markdown-command-needs-filename t
-          markdown-content-type "application/xhtml+xml"
-          markdown-css-paths '("https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css")
-          markdown-xhtml-header-content "
-<style>
-body {
-  box-sizing: border-box;
-  max-width: 740px;
-  width: 100%;
-  margin: 40px auto;
-  padding: 0 10px;
-}
-</style>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  document.body.classList.add('markdown-body');
-});
-</script>
-" ))
+      :ensure t
+      :commands (markdown-mode gfm-mode)
+      :mode (("\\.md\\'" . gfm-mode)
+      ("\\.markdown\\'" . gfm-mode))
+      :config
+      (setq
+       markdown-command "github-markup"
+       markdown-command-needs-filename t
+       markdown-content-type "application/xhtml+xml"
+       markdown-css-paths '("https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css")
+       markdown-xhtml-header-content "
+  <style>
+  body {
+    box-sizing: border-box;
+    max-width: 740px;
+    width: 100%;
+    margin: 40px auto;
+    padding: 0 10px;
+  }
+  </style>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.classList.add('markdown-body');
+  });
+  </script>
+  "))
+
 #+end_src
 ** copilot
 
@@ -974,6 +1011,7 @@ document.addEventListener('DOMContentLoaded', () => {
                      :files ("*.el"))
     :config
     (setq copilot-indent-offset-warning-disable t)
+    (setq warning-suppress-log-types '((copilot copilot-exceeds-max-char)))
     (add-hook 'prog-mode-hook 'copilot-mode)
     (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
     (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion))

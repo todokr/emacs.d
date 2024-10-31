@@ -22,3 +22,5 @@ init.elc
 
 /projects
 /session.*
+/.DS_Store
+*.eld
