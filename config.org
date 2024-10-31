@@ -424,8 +424,7 @@ org-modeの見た目をリッチに
                   (regular) ; like this it uses all the fallback values and is named `regular'
                   (medium
                    :default-weight semilight
-                   :default-height 115
-                   :bold-weight extrabold)
+                   :default-height 115)
                   (large
                    :inherit medium
                    :default-height 150)
@@ -1008,7 +1007,10 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     (setq warning-suppress-log-types '((copilot copilot-exceeds-max-char)))
     (add-hook 'prog-mode-hook 'copilot-mode)
     (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-    (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion))
+    (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+    (define-key copilot-completion-map (kbd "M-f") 'copilot-accept-completion-by-word)
+    (define-key copilot-completion-map (kbd "M-n") 'copilot-next-completion)
+    (define-key copilot-completion-map (kbd "M-p") 'copilot-previous-completion))
 #+end_src
 
 ** template
