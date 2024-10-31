@@ -6,6 +6,7 @@ heavyly infruenced by https://qiita.com/nobuyuki86/items/122e85b470b361ded0b4
   ;;; config --- Summary
   ;;; Commentary:
   ;;; Code:
+  (require 'bind-key)
 #+end_src
 
 ** Quelpa
@@ -368,11 +369,9 @@ heavyly infruenced by https://qiita.com/nobuyuki86/items/122e85b470b361ded0b4
 org-agenda のディレクトリを指定
 
 #+begin_src emacs-lisp
- (use-package org-agenda
-   :ensure nil
-   :after org
-   :config
-   (setq org-agenda-files (file-expand-wildcards (concat org-directory "/*.org"))))
+  (use-package org-agenda
+    :ensure nil
+    :after org)
 #+end_src
 
 *** org-modern
@@ -556,8 +555,7 @@ org-modeの見た目をリッチに
 				      'corfu-reset)))
       "If we made a selection during `corfu' completion, cancel it.")
     (define-key corfu-map (kbd "DEL") corfu-magic-cancel-or-backspace)
-    (define-key corfu-map (kbd "<backspace") corfu-magic-cancel-or-backspace)
-    )
+    (define-key corfu-map (kbd "<backspace") corfu-magic-cancel-or-backspace))
 #+end_src
 
 ** cape
@@ -736,12 +734,9 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
 ** treemacs
 
 #+begin_src emacs-lisp
-    (use-package treemacs
+  (use-package treemacs
     :ensure t
     :defer t
-    :init
-    (with-eval-after-load 'winum
-      (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
     :config
     (progn
       (setq treemacs-collapse-dirs                 (if (treemacs--find-python3) 3 0)
@@ -971,7 +966,6 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
 
 ** Markdown
 #+begin_src emacs-lisp
-
   (use-package markdown-mode
       :ensure t
       :commands (markdown-mode gfm-mode)
@@ -1015,7 +1009,6 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
     (add-hook 'prog-mode-hook 'copilot-mode)
     (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
     (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion))
-
 #+end_src
 
 ** template
@@ -1126,9 +1119,11 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
 ** Deno
 
 #+begin_src emacs-lisp
-  (require 'eglot)
-  (use-package typescript-mode :ensure t)
-  (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
+  (use-package typescript-mode
+    :ensure t
+    :init (require 'eglot)
+    :config
+    (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp"))))
 
   (defclass eglot-deno (eglot-lsp-server) ()
     :documentation "A custom class for deno lsp.")
@@ -1143,7 +1138,8 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
 
 #+begin_src emacs-lisp
   (use-package go-mode
-    :ensure t)
+    :ensure t
+    :defer t)
 #+end_src
 
 
@@ -1152,10 +1148,14 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
 #+begin_src emacs-lisp
   ;; Enable scala-mode and sbt-mode
   (use-package scala-mode
+    :ensure t
+    :defer t
     :interpreter ("scala" . scala-mode))
 
   ;; Enable sbt mode for executing sbt commands
   (use-package sbt-mode
+    :ensure t
+    :defer t
     :commands sbt-start sbt-command
     :config
     ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
@@ -1171,11 +1171,12 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
 ** Mermaid
 
 #+begin_src emacs-lisp
-    (use-package mermaid-mode
-      :ensure t
-      :config
-      (setq mermaid-mmdc-location "~/.n/bin/mmdc")
-      (setq mermaid-output-format ".svg"))
+  (use-package mermaid-mode
+    :ensure t
+    :defer t
+    :config
+    (setq mermaid-mmdc-location "~/.n/bin/mmdc")
+    (setq mermaid-output-format ".svg"))
   #+end_src
 
 ** tree-sitter

@@ -7,7 +7,7 @@
       '(("gnu" . "http://elpa.gnu.org/packages/")
         ("melpa" . "http://melpa.org/packages/")
         ("org" . "http://orgmode.org/elpa/")))
-
+(require 'bind-key)
 ;; ファイルの生成・読み込み（elcでは実行されない）
 (eval-when-compile
   (require 'org)
