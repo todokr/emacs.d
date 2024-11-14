@@ -412,7 +412,9 @@ org-modeの見た目をリッチに
 #+end_src
 
 ** フォント
+abcdefg
 これが日本語
+@#$%^&*()_+=;'"
 #+begin_src emacs-lisp
             (use-package fontaine
               :ensure t
@@ -698,6 +700,14 @@ Emacsの組み込み補完機能を拡張、補完候補の候補をカスタマ
       '(transient-append-suffix 'magit-diff '(-1 -1)
          [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
           ("S" "Difftastic show" difftastic-magit-show)])))
+#+end_src
+
+** ripgrep
+#+begin_src emacs-lisp
+  (use-package rg
+    :ensure t
+    :bind (("M-g r" . rg)
+           ("M-g R" . rg-dwim)))
 #+end_src
 
 ** 補完の並び替え
